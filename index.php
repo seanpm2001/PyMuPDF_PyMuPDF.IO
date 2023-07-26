@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/ticker.css">
-    <link rel="shortcut icon" src="https://pymupdf.readthedocs.io/en/latest/_static/PyMuPDF.ico">
+    <link rel="shortcut icon" src="favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/jquery.terminal.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/unix_formatting.min.js"></script>
@@ -18,13 +18,33 @@
     />
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
 
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NNNN72B');</script>
+
+
     <script defer data-domain="pyodide.org" src="https://plausible.io/js/plausible.js"></script>
+
+    <!-- allows us to load the mupdf document okay -->
+    <?php
+
+      header('Access-Control-Allow-Credentials:true',true);
+
+    ?>
 
 
   </head>
 
 
   <body>
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NNNN72B"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
 
     <header>
@@ -135,7 +155,7 @@
         <div id="pythonScript" class="d">
         <pre>
 <code>import pyodide.http</code>
-<code>r = await pyodide.http.pyfetch('https://dijipiji.com/artifex/docs/mupdf_explored.pdf')</code>
+<code>r = await pyodide.http.pyfetch('https://pymupdf.io/docs/mupdf_explored.pdf')</code>
 <code>data = await r.bytes()</code>
 <code>doc = fitz.Document(stream=data)</code>
 <code>for page in doc:</code>
