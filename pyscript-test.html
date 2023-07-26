@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>PyMuPDF with PyScript test</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+
+    <py-config>
+      packages = ["./PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl"]
+      terminal = false
+    </py-config>
+
+    <div id="output"></div>
+
+    <py-script>
+        import fitz
+
+        def displayVersion():
+            display(fitz.version, target="output")
+    </py-script>
+
+    <button py-click="displayVersion()">Show PyMuPDF version</button>
+
+  </body>
+</html>
