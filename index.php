@@ -175,7 +175,7 @@
 
         <h3><span class="python-prompt"></span> Licensing</h3>
 
-        PyMuPDF is available under both, open-source AGPL and commercial license agreements.
+        PyMuPDF is available under both, open-source AGPL and commercial <a class="animate-link" href="https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright">license agreements</a>.
 
         <p>If you determine you cannot meet the requirements of the AGPL, please <a class="animate-link" href="https://artifex.com/contact/pymupdf-inquiry.php?utm_source=pymupdf.io&utm_medium=website&utm_content=inline-link">contact Artifex</a> for more information regarding a commercial license.</p>
 
@@ -264,7 +264,7 @@
         const micropip = pyodide.pyimport("micropip");
 
         await micropip.install(
-          'https://ghostscript.com/~julian/pyodide/PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl'
+          'PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl'
         )
 
         await pyodide.runPython(`
