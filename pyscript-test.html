@@ -7,21 +7,45 @@
   </head>
   <body>
 
+    <h1>PyMuPDF with PyScript</h1>
+    <p>
+    PyScript allows for Python code embedded within your HTML and JavaScript interoperability. Below shows some typical PyMuPDF operations running in the browser with PyScript markup. </p>
+
     <py-config>
-      packages = ["./PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl"]
-      terminal = false
+        packages = ["./PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl"]
     </py-config>
 
-    <div id="output"></div>
 
     <py-script>
         import fitz
+        import pyodide.http
+        import asyncio
 
         def displayVersion():
-            display(fitz.version, target="output")
+            Element('output').write(fitz.version)
+            print(fitz.version)
+
+        def countPages():
+            asyncio.create_task(processCountPages())
+
+        async def processCountPages():
+            r = await pyodide.http.pyfetch('./mupdf_explored.pdf')
+            data = await r.bytes()
+            doc = fitz.Document(stream=data)
+            Element('output').write(doc.page_count)
+
+            for page in doc:
+                print(f'Page: {page.number}')
+
     </py-script>
 
     <button py-click="displayVersion()">Show PyMuPDF version</button>
+
+    <button py-click="countPages()">Count the pages in a document</button>
+
+    <div id="output"></div>
+
+    <py-terminal></py-terminal>
 
   </body>
 </html>
