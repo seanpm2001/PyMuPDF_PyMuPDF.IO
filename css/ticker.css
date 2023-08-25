@@ -45,7 +45,7 @@
     position: relative;
     opacity: 0.9;
     mix-blend-mode: exclusion;
-    animation: ghostMove 2.8s ease-out infinite;
+    animation: ghostMove 2.5s ease-out infinite;
     margin-bottom: -120px;
 }
 
