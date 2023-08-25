@@ -1,4 +1,4 @@
-let rate = 0.13315865; // the average rate since August 2016
+let rate = 0.1424; // the average rate since August 2016
 let intialDate = new Date("2016-08-01");
 
 var initialNumber;
@@ -14,7 +14,7 @@ function tick(initialRun) {
 
   let el = document.getElementById("ticker");
 
-  // work out the initial number which is around 29 million since August 2016
+  // work out the initial number which is around 31 million since August 2016
   if (initialRun) {
     const now = new Date();
     const diffTime = Math.abs(now - intialDate);

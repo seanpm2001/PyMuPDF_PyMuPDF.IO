@@ -51,7 +51,7 @@
       <div class="panel">
         <img class="logo blink-me" src="images/logo.svg"/>
         <h1>Welcome to<br/>PyMuPDF</h1>
-        <h2>Downloaded more than <strong>20 million times</strong> and consistently developed for more than eight years, <strong>PyMuPDF</strong> is the clear choice for <strong>Python</strong> developers looking to tap into powerful <strong>API</strong> functionality for <strong>PDF</strong>.</h2>
+        <h2>Downloaded more than <strong>30 million times</strong> and consistently developed for more than eight years, <strong>PyMuPDF</strong> is the clear choice for <strong>Python</strong> developers looking to tap into powerful <strong>API</strong> functionality for <strong>PDF</strong>.</h2>
         </div>
     </header>
 
@@ -78,7 +78,7 @@
       </div>
 
 
-      <div style="margin-top:50px;"><span style="font-size:18px;color:red;">*</span><small> This visualization shows the 29 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 2.8 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
+      <div style="margin-top:50px;"><span style="font-size:18px;color:red;">*</span><small> This visualization shows the 30 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 2.8 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
 
       <hr>
 
@@ -175,7 +175,7 @@
 
         <h3><span class="python-prompt"></span> Licensing</h3>
 
-        PyMuPDF is available under both, open-source AGPL and commercial <a class="animate-link" href="https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright">license agreements</a>.
+        <strong>PyMuPDF</strong> is available under both, open-source AGPL and commercial <a class="animate-link" href="https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright">license agreements</a>.
 
         <p>If you determine you cannot meet the requirements of the AGPL, please <a class="animate-link" href="https://artifex.com/contact/pymupdf-inquiry.php?utm_source=pymupdf.io&utm_medium=website&utm_content=inline-link">contact Artifex</a> for more information regarding a commercial license.</p>
 
