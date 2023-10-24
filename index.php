@@ -260,12 +260,7 @@
           { globals: namespace },
         );
 
-        await pyodide.loadPackage("micropip");
-        const micropip = pyodide.pyimport("micropip");
-
-        await micropip.install(
-          'PyMuPDF-1.22.2-cp311-cp311-emscripten_3_1_32_wasm32.whl'
-        )
+        await pyodide.loadPackage('PyMuPDF-1.23.5-cp311-none-emscripten_3_1_32_wasm32.whl');
 
         await pyodide.runPython(`
           import fitz
