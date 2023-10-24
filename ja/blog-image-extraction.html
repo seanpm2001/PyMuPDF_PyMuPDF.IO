@@ -1,0 +1,340 @@
+<html lang="ja">
+  <head>
+    <title>PyMuPDFを探索する：PDFにおける画像の処理</title>
+    <meta charset="utf-8">
+    <meta content="PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。" name="description">
+    <meta content="PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript" name="keywords">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" src="https://pymupdf.readthedocs.io/en/latest/_static/PyMuPDF.ico">
+    <link rel="stylesheet" type="text/css" href="https://artifex.com/_utilities/prism/prism.css">
+    <link rel="stylesheet" type="text/css" href="blog.css">
+
+    <style>
+
+       .copy-to-clipboard-button {
+           background: #007aff !important;
+           color: white !important;
+           padding: 10px !important;
+           border-radius: 5px !important;
+           font-family: Arial !important;
+       }
+
+    </style>
+
+    <script type="text/javascript" nonce="atx-inline" src="https://artifex.com/_utilities/prism/prism.js"></script>
+
+  </head>
+  <body>
+
+    <header><a href="../index.php">PYMUPDF.io</a><a href="blog-text-extraction.html">PyMuPDFによるテキスト抽出 著者</a></header>
+
+    <main>
+
+        <div class="left"><img src="py-blog-imageextract.png" /></div>
+
+        <article class="right">
+            <h1 class="title">PyMuPDFを探索する：PDFにおける画像の処理</h1>
+
+            <h2 class="author">ハラルド・リーダー(Harald Lieder)- 2022年12月20日火曜日</h2>
+
+            <hr/>
+
+            <p>この記事は、PyMuPDFの機能に関するシリーズの一部です。</p>
+
+            <p>PyMuPDFは、<a href="https://mupdf.com/?utm_source=artifex&utm_medium=japanese-blog&utm_content=inline-link">MuPDF</a>のPythonバインディングです。MuPDFは、軽量なPDF、XPS、電子書籍ビューア、レンダラー、およびツールキットです。PyMuPDFとMuPDFは、Artifex Software, Inc.によってメンテナンスおよび開発が行われています</p>
+
+<p>(Py-) MuPDFは、PDF、XPS、OpenXPS、CBZ、MOBI、EPUB、およびFB2（電子書籍）形式のファイルにアクセスできます。また、そのパフォーマンスの高さとレンダリング品質の高さで知られています。</p>
+
+<p>PyMuPDFのホームページは<a href="https://github.com/pymupdf/PyMuPDF">GitHub</a>にあります。<code class="inline">pip install pymupdf</code>を使用して、<a href="https://pypi.org/project/PyMuPDF/">PyPI</a>からインストールすることができます。</p>
+
+<h2>要約</h2>
+
+<p>PDFのテキスト抽出や挿入に加えて、同様の方法で画像を扱うこともしばしば求められます。</p>
+
+
+<ul type="disc">
+<li><strong>画像の抽出：</strong> 文書に埋め込まれた画像（すべてまたは選択したいくつか）を抽出し、PNGやJPEGなどの通常の画像ファイルとして保存したい場合。</li>
+
+<li><strong>画像の挿入：</strong>  PDFを作成し、テキストと並んで特定の位置に`画像を挿入<strong>したい場合もあります</strong>。</li>
+
+<li><strong>画像の置換：</strong>  別の要件として、埋め込まれた画像のためにPDFが<strong>大きすぎる</strong>場合があります。多くの画像はカラフルで解像度が高すぎるため、同じ目的にグレースケールのバージョンと適度な解像度で十分です。</li>
+
+<li><strong>画像の削除：</strong>  画像を表示しないか、表示する必要がない場合もあります。</li>
+
+<li><strong>画像の再配置：</strong>  さらに難しい場合もあります。画像が適切な位置に表示されず、ボックスサイズが小さすぎたり、回転が正しくなかったりする場合があります。</li>
+
+</ul>
+
+<p>これらのすべての状況において、PyMuPDFは助けになります。</p>
+
+
+
+<h2>画像の抽出</h2>
+
+<p>これには少なくとも2つの方法があります。</p>
+
+<p>メソッド1は、PDFに限らず、<strong>すべてのドキュメントタイプで利用できます</strong>。画像は、PyMuPDFの記事 <a href="blog-text-extraction.html">「PyMuPDFによるテキスト抽出」</a> で説明されているいくつかのページテキスト抽出のバリアントの一部として提供されます。</p>
+
+<p>一般的なコーディングパターンは次のようなものです：</p>
+
+
+<!-- code sample 1 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    doc = fitz.open("some.file")  # open some supported document
+
+    # iterate over the pages
+    for page in doc:
+        img_number = 0  # for enumerating images per page
+        # iterate over the image blocks
+        for block in page.get_text("dict")["blocks"]:
+            # skip if no image block
+            if block["type"] != 1:
+                continue
+            # build filename, like 'img17-3.jpg'
+            name = f"img{page.number}-{img_number}.{block['ext']}"
+            out = open(name, "wb")
+            out.write(block["image"])  # write the binary content
+            out.close()
+            img_number += 1  # increase image counter
+    </code>
+</pre>
+
+
+<p>各画像ブロックには多くのメタデータが含まれており、関連する画像を選択したり、潜在的な重複を回避したりするのに役立ちます。</p>
+
+<p>メソッド2は<strong>PDFドキュメントに</strong>のみ適用されます。テキストの抽出や個々のページへのアクセスは必要ありません。PDF固有の情報を使用できるためです。</p>
+
+<p>PDFのオブジェクト定義を反復処理し、画像オブジェクトのみを選択します。ページへのアクセスを回避することで、PDFの内部構造が正しくない場合でも画像を正常に抽出することができます。PDFの損傷は残念ながら稀ではなく、インターネット経由での不完全なダウンロードによってほとんど発生します。</p>
+
+<!-- code sample 2 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    doc = fitz.open("some.pdf")  # open the PDF
+
+    xreflen = doc.get_xreflength()  # count of all objects in file
+    # we will iterate through all objects in the PDF and select images
+    for i in range(1, xreflen):  # do not access item 0 of the table
+        if doc.xref_get_key(i, "Subtype")[1] != "/Image":  # check if image
+            continue  # not an image, skip
+        # this is an image!
+        img = doc.extract_image(i)  # extract it and store its content
+        # build filename, like 'img-4711.png'
+        name = f"img-{i}.{img['ext']}"
+        out = open(name, "wb")
+        out.write(img["image"])  # write the binary content
+        out.close()
+    </code>
+</pre>
+
+<p>PDFドキュメントでは、このタスクの他のバリエーションも利用可能です。最良の結果を得るために選択できるスクリプトを作成しました：</p>
+
+
+<ul type="disc">
+<li><a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-imgb.py">extract1</a> は、上記の戦略に従う単独のスクリプトであり、さらに大きさが十分であり、単色ではないなどの基準を満たす画像を選択します。</li>
+
+<li><a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract.py">extract2</a> はページごとに画像を抽出し、前のスクリプトと似たような選択基準を適用します。</li>
+</ul>
+
+
+<h2>画像の挿入</h2>
+
+<p>PDFページに画像を表示して改善したいですか？ または、すべてのページの左上隅に会社のロゴを配置したいですか？ または、透かしを追加したいですか？</p>
+
+<p>これらすべては、PyMuPDFの<code class="inline">Page</code>クラスの<code class="inline">insert_image()</code>メソッドを使用して実行できます。</p>
+
+<p>このメソッドは、3つの異なるソースからの入力をサポートしています：画像ファイル、メモ内の画像、およびMuPDF独自の画像形式である<codeclass="inline">Pixmap</code>。</p>
+
+<p>画像は、ページ上の指定された矩形に挿入することができます。その矩形は任意のサイズであり、その幅と高さの比率は画像と異なる場合もあります。</p>
+
+<p>画像は、その中心と矩形の中心が一致するようにスケーリングされて配置されます。</p>
+
+<p>オプションで、90度、180度、または270度の画像回転も選択できます。</p>
+
+<p>画像挿入プロセスの<strong>最適なパフォーマンスを実現</strong>するために、多くの注意が払われています：</p>
+
+<ul type="disc">
+<li>このメソッドは、以前に他の場所に挿入した画像の追跡を自動的に行います。</li>
+
+<li>さらに、プログラマーはメソッドのパラメーターで任意の画像を明示的に識別することもできます。</li>
+</ul>
+
+
+<p>どちらの場合でも、既存の画像への参照がページのオブジェクト定義に配置されます。</p>
+
+<p>したがって、たとえ100,000ページにロゴを挿入しても、高速かつファイルサイズの影響は最小限に抑えられます！</p>
+
+<p>これがメソッドの呼び出しパターンの重要な部分です：</p>
+
+<!-- code sample 3 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    page.insert_image(
+        rect,  # the desired rectangle
+        filename=filename,  # image file
+        stream=buffer,  # image in memory
+        pixmap=pixmap,  # image from pixmap
+        rotate=angle,  # 0, 90, 180, 270
+        xref=0,  # >0 refers to an existing image
+        # more parameters
+    )
+    </code>
+</pre>
+
+
+<h2>画像の置き換えまたは削除</h2>
+
+<p>いくつかの使用例があります。例としては：</p>
+
+<ul type="disc">
+<li>各ページに古い会社のロゴ画像が表示されているPDFがあり、ファイルを再作成せずにそれを置き換えたい場合。</li>
+
+<li>画像を置換したい場合：たとえば、PNG形式の画像をJPEGバージョンや透明度を持つバージョン、または異なる色空間（例：カラーからグレースケール）に変更したい場合。</li>
+
+<li>画像を削除したい場合。</li>
+</ul>
+
+
+<p>PDFに埋め込まれた画像を置換または削除するために、以下の手順を使用することができます。</p>
+
+<p>新しい画像は、古い画像が表示されていた場所、つまり古い画像を使用しているすべてのページに表示されます。新しい画像は、どこでも同じ矩形領域をカバーします。</p>
+
+<p>各ページのレンダリング指示は変更を実現せず、従って以前と同じアスペクト比を仮定します。もし変更があれば、新しい画像は何らかの方法で歪んで表示されることになります。</p>
+
+<p>このタスクを実行するためには、以下のアイテムが必要です：</p>
+
+<ol>
+<li>ファイル <a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/image-replacement/replacer.py">replacer.py</a> から <code class="inline">img_replace</code> メソッドをインポートします。</li>
+<li>古い画像の <code class="inline">xref</code> を知る必要があります。</li>
+<li>1つのPDFのページが必要です。通常は古い画像が表示されるページですが、必須ではありません。</li>
+<li>新しい画像が必要です。これはファイル名、メモリ内の画像データ、または <code class="inline">Pixmap</code> 形式のいずれかで提供できます。</li>
+</ol>
+
+<p>それから、以下の手順を実行するだけです：</p>
+
+<!-- code sample 4 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    import fitz
+    from replacer import img_replace
+
+    doc = fitz.open("your.pdf")
+    page = doc[nnn]  # any page of doc
+    # ----------------------------------------
+    # find out the xref of the old image
+    # see some hints further down
+    # ----------------------------------------
+    filename = "image.jpg"  # some image
+    # or equivalently a bytes object containing it
+    # or equivalently a fitz.Pixmap
+    img_replace(page, xref,
+        filename=filename,  # or one of the following:
+        stream=None,  # alternatively
+        pixmap=None,  # alternatively
+    )
+    doc.save("your-new.pdf",garbage=4)  # save changed PDF
+    </code>
+</pre>
+
+<p><strong>古い画像を</strong> <code class="inline">xref</code>で<strong>削除する</strong>には、上記のスニペットを以下のように変更してください：</p>
+
+<!-- code sample 5 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    pix = fitz.Pixmap(fitz.csGRAY, (0, 0, 1, 1), 1)  # small pixmap
+    pix.clear_with()  # empty its content
+    img_replace(page,xref,
+        pixmap=pix,
+    )
+    </code>
+</pre>
+
+
+<p>ここでは、小さな（2 x 2）の透明な<code class="inline">Pixmap</code>を作成し、それを元の画像と置き換えるために使用しました。この<code class="inline">Pixmap</code>は見えないため、画像が表示されていない場合と同じ効果があります。全体として、ファイルでは200バイト未満の容量が必要です。</p>
+
+<h2>画像のXREFの検索</h2>
+<p>では、画像のクロスリファレンス番号（<code class="inline">xref</code>）をどのように見つけることができるでしょうか？</p>
+
+<p>次のように、ページに表示される画像のリストを作成します：</p>
+
+
+<!-- code sample 6 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    In [1]: import fitz
+    In [2]: doc = fitz.open("original.pdf")
+    In [3]: page = doc[0]
+    In [4]: page.get_images()
+    Out[4]: [(46, 0, 439, 501, 8, 'DeviceRGB', '', 'fzImg0', 'FlateDecode')]
+    </code>
+</pre>
+
+
+<p>ここでは簡単です：このページには1つの画像しかありませんし、その<code class="inline">xref</code>は46です。もし複数の画像がある場合、表示位置（境界ボックス - bbox）を以下のように表示します：</p>
+
+
+<!-- code sample 7 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    In [5]: for item in page.get_images():
+       ...:  xref = item[0]
+       ...:  print(xref, page.get_image_rects(xref))
+       ...:
+    46 [Rect(200.00001525878906, 240.63067626953125,
+             497.6600341796875, 580.3292236328125)]
+    </code>
+</pre>
+
+<p>おそらく、画像がページの<strong>どこ</strong>に表示されているかを知っているため、適切な<code class="inline">xref</code>を見つけることができます。</p>
+
+
+<h2>画像の位置を変更する</h2>
+
+
+<p>画像を挿入する際、それがページ上でどのように見えるかを事前に予測することは難しい場合があります。</p>
+
+<p>正しい位置に配置されていますか？矩形は十分に大きいですか？他のコンテンツとの重なりはありますか？</p>
+
+
+<p>ここで、あなたをサポートするための<a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/edit-images/edit.py">GUIスクリプト</a>を開発しました。</p>
+
+<p>使用するには、最新バージョンのwxPythonをインストールする必要があります（<code class="inline">python -m pip install wxpython</code>）。それから、単にスクリプトを起動します。</p>
+
+<p>それによってPDFを選択することができ、準備が整います！ページをめくり、既存の画像を選択したり、画像ファイルから選んで新しい画像を挿入したりすることができます。</p>
+
+
+<p>画像をページ上で移動したり、表示矩形のサイズを変更したり、画像を完全に削除したりすることができます。</p>
+
+<p>以下は、インターフェースの<a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/edit-images/figure-01.jpg">ビジュアル</a>イメージです。</p>
+
+
+<h2>まとめ</h2>
+
+<p>この記事では、PyMuPDFの画像処理機能について概要を提供しました。</p>
+
+<p>PyMuPDFでは、MuPDFでサポートされているすべてのドキュメントタイプから画像を<strong>抽出</strong>することができます。これには、PDF、XPS、EPUB、MOBI、HTMLやXMLなどのインターネット形式などが含まれます。</p>
+
+<p>画像の<strong>挿入</strong>はPDFファイルに対して可能です。</p>
+
+
+<p>既存のPDF文書内の画像を<strong>置換、削除、または再配置する</strong>ためのツールが存在します。</p>
+
+<p>PyMuPDFは、大規模かつ高機能なドキュメント処理のPythonパッケージです。優れたパフォーマンスと高品質なレンダリングに加えて、その優れた <a href="https://pymupdf.readthedocs.io/ja/latest/?utm_source=artifex&utm_medium=japanese-blog&utm_content=inline-link-documentation">ドキュメンテーション</a> でも知られています。PDF版のドキュメントは現在、420ページ以上（レターサイズ）あり、そのうち70ページ以上がHow-To形式のレシピに充てられています。必読の価値があるでしょう。</p>
+
+
+<p>もう1つの知識源は、<a href="https://github.com/pymupdf/PyMuPDF-Utilities">ユーティリティ</a>リポジトリです。PDFを扱う際に何をする予定があっても、そこでスタートを切るためのいくつかのサンプルスクリプトを見つけることができるでしょう。</p>
+
+<p>PyMuPDFに関する質問がある場合は、<a href="https://discord.gg/TSpYGBW4eq">#pymupdf</a>  Discordチャンネルで開発者に連絡することができます。開発者は、ご質問に対してガイダンスやサポートを提供することができます。</p>
+
+
+
+
+
+</article>
+
+    </main>
+
+    <footer></footer>
+  </body>
+</html>

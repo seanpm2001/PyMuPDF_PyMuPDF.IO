@@ -1,0 +1,377 @@
+<html lang="ja">
+  <head>
+    <title>PyMuPDFによるテキスト抽出 著者</title>
+    <meta charset="utf-8">
+    <meta content="PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。" name="description">
+    <meta content="PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript" name="keywords">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" src="https://pymupdf.readthedocs.io/en/latest/_static/PyMuPDF.ico">
+    <link rel="stylesheet" type="text/css" href="https://artifex.com/_utilities/prism/prism.css">
+    <link rel="stylesheet" type="text/css" href="blog.css">
+
+    <style>
+
+       .copy-to-clipboard-button {
+           background: #007aff !important;
+           color: white !important;
+           padding: 10px !important;
+           border-radius: 5px !important;
+           font-family: Arial !important;
+       }
+
+    </style>
+
+    <script type="text/javascript" nonce="atx-inline" src="https://artifex.com/_utilities/prism/prism.js"></script>
+
+  </head>
+  <body>
+
+    <header><a href="../index.php">PYMUPDF.io</a><a href="blog-image-extraction.html">PyMuPDFにおける画像の処理</a></header>
+
+    <main>
+
+        <div class="left"><img src="py-blog-textextract.png" /></div>
+
+        <article class="right">
+            <h1 class="title">PyMuPDFによるテキスト抽出 著者</h1>
+
+            <h2 class="author">ハラルド・リーダー(Harald Lieder)- 2022
+年7月13日(水曜日)</h2>
+
+    <hr/>
+    <h2>PyMuPDFを使用したテキスト抽出</h2>
+    <h3>PyMuPDF:ただのテキスト抽出パッケージですか?</h3>
+
+    <p>
+    PDFドキュメントからテキストを抽出するためのオープンソースおよび商用のパッ ケージや製品は数多く存在します。
+    </p>
+<p>
+ではなぜPyMuPDFを見る価値があるのでしょうか?
+</p>
+
+
+<p>この記事では、PyMuPDFが他のアプローチとどのように異なるのかを説明し、最初 のステップを示します。</p>
+
+<p>PyMuPDFは...</p>
+
+<ul type="disc">
+
+<li><a href="https://artifex.com?utm_source=artifex&utm_medium=japanese-blog&utm_content=inline-link">Artifex</a>が所有および維持している製品です。オープンソースのフリーウェアライ センス(GNU AGPL 3.0)および商用ライセンスで利用できます。</li>
+<li>Pythonのプログラミングライブラリであり、CライブラリであるMuPDFに便利 なアクセスを提供します。MuPDFもArtifexが同じライセンスモデルで所有およ び維持しています。</li>
+<li><a href="https://github.com/pymupdf/PyMuPDF">GitHub</a>上にホームページがあり、<a href="https://pypi.org/project/PyMuPDF/">PyPI</a>からインストールできます。</li>
+
+<li>MuPDFの多くの機能をサポートしています。テキスト抽出はその数十ある他の機能の一つに過ぎません。</li>
+<li>テキスト抽出は、他の機能と同様に、優れたパフォーマンスと卓越したレンダリング品質で知られています。</li>
+
+
+<li><strong>PDFドキュメントに限定されているわけではありません</strong>。他のパッケージとは異 なり、PyMuPDFのAPIはPDFの他にXPS、EPUB、HTMLなどのサポートされてい るすべてのドキュメントタイプに対して同じ方法で動作します。フリーウェアま たは商用を問わず、これが可能なパッケージは知られていません。</li>
+
+
+<li><strong>TesseractのOCRエンジン</strong>を統合的にサポートしています。スクリプト内で、フ ルドキュメントページのOCR化が必要か、一部の部分のみのOCR化が必要かを動 的に決定し、Tesseractを呼び出してその出力を「通常の」テキストと一緒に処 理することができます。</li>
+
+</ul>
+
+
+<h2>テキストの抽出において何が問題になる可能性がありますか?</h2>
+
+
+<p>もしテキスト抽出ツールを使用したことがある場合、少なくとも以下のいくつかの 厄介な状況に遭遇したことがあるかもしれません:</p>
+<ul type="disc">
+<li>正しい("自然な" / 予想される)読み取り順序ではないこと。</li>
+<li>サポートされていない文字や読み取り不可能な文字が表示されること。例えば、ここに ”The �ase �lass fo� P�MuPDF’s linkDest, ...” のような文字化けが表示されることがあります。</li>
+<li>人間はページを読むことができるが、プログラムは何の出力も生成しないこと。</li>
+</ul>
+
+
+<p>PyMuPDFは、これらの問題に対処するためのサポートを提供できます。</p>
+
+<p>必要に応じて、基本的なプレーンテキストの抽出(1つのPythonステートメントだ けで可能)と、ページ上の各文字の位置、書き方の方向、色、フォントサイズ、 フォント名、フォントのプロパティなどに対する高度なアクセスの中から選択する ことができます。</p>
+
+<p>出力形式は、プレーンテキスト、HTMLやSVGのような特殊な形式から、詳細な Python辞書(またはJSON文字列)まで、さまざまな形式があります。</p>
+
+
+
+<h2>PyMuPDFのテキスト抽出の使用方法</h2>
+
+<h3>プレーンテキストの抽出:</h3>
+
+<p>他のPythonパッケージと同様に、まずPyMuPDFをインポートする必要があります。 これは、トップレベル名「fitz」の下で行われます。</p>
+
+<!-- code sample 1 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    In [1]: import fitz # import PyMuPDF
+    In [2]: doc = fitz.open("PyMuPDF.pdf") # open a supported document
+    In [3]: page = doc[0] # load the required page (0-based index)
+    In [4]: text = page.get_text() # extract plain text
+    In [5]: print(text) # process or print it:
+    PyMuPDF Documentation
+    Release 1.20.0
+    Artifex
+    Jun 20, 2022
+    In [6]:
+    </code>
+</pre>
+
+
+<p>シンプルな方法で作成されたドキュメントの場合、これだけでテキスト抽出が可能です。</p>
+
+<p>PyMuPDFでは、すべてのドキュメントが <strong>ページのシーケンス</strong>でもあるため、 Pythonのシンタックスパワーを持つイテレータとして使用することができます。以 下のコードは、すべてのドキュメントページを抽出し、改ページ文字<code class="inline">0XC</code>でテキス トを連結します。</p>
+
+<!-- code sample 2 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    In [7]: all_text = ""
+    In [8]: for page in doc:
+     ...: all_text += page.get_text() + chr(12)
+
+    In [10]: # or, with the even faster list comprehension:
+    In [11]: all_text = chr(12).join([page.get_text() for page in doc]) In [13]:
+    </code>
+</pre>
+
+<p>上記の方法は<strong>非常に高速</strong>です。AdobeのPDFマニュアル(756ページ、1,310ペー ジ)や、3,000ページ以上のPandasマニュアルなどの完全なドキュメントに対し て、実行時間は0.7秒から2秒未満になることが予想されます。</p>
+
+<p>この方法は、<a href="https://en.wikipedia.org/wiki/Pdftotext">pdftotext</a> (<a href="https://en.wikipedia.org/wiki/Poppler_(software)">Poppler</a>の基本ライブラリであるXPDFのコンポーネント)よりも約3倍高速であり、<a href="https://pypi.org/project/pdfminer.six/">pdfminer</a>や<a href="https://pypi.org/project/PyPDF2/">PyPDF2</a>などの一般的な純粋なPythonパッケージよりも30倍から45倍速いです!</p>
+
+
+<p>もしドキュメント内のテキストが物理的に<strong>読み取り順序で保存されていない</strong>可能性 がある場合は、メソッドのsortパラメータを使用することで対処できます: <code class="inline">page.get_text(sort=True)</code>。これにより、ページのテキスト段落が「左上から右下」 の順序で並べられ、多くのドキュメントに対して満足のいく結果が得られるはずで す。</p>
+
+<p>また、ページの特定の領域にテキストの抽出を制限することもできます。たとえ ば、ページが2列のレイアウトを持つ場合、それぞれの領域を表す2つの矩形を定義 し、対応するテキスト部分を別々に抽出することができます。</p>
+
+<!-- code sample 3 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    page_rect = page.rect # the full page rectangle
+    half_width = page_rect.width / 2 # half of the page width
+    left_rect = +page_rect # copy of page rectangle
+    left_rect.x1 = half_width # only left half
+    right_rect = +page_rect # copy of page rect
+    right_rect.x0 = half_width # only right half
+
+    # use those two rectangles as clip areas for extractions:
+    left_text = page.get_text(sort=True, clip=left_rect)
+    right_text = page.get_text(sort=True, clip=right_rect)
+    </code>
+</pre>
+
+
+
+<h2>全ての詳細を含めてテキストを抽出する。</h2>
+
+<p>同じ方法は、抽出されたテキストとともに詳細な情報を提供することもできます。 例えば:</p>
+
+<ul type="disc">
+<li>書き方の方向とモード(水平/垂直)</li>
+<li>色(RGB)</li>
+<li>フォント名とフォントのプロパティ</li>
+<li>位置情報(単一の文字、行、段落ごと) </li>
+<li>画像</li>
+<li>自動的なスペースの置換</li>
+<li>自動的なハイフネーションの検出と処理</li>
+</ul>
+
+<p>PyMuPDFのドキュメントPDFマニュアルのヘッダーページから、小さな例を選んで
+みましょう(<a href="https://pymupdf.readthedocs.io/_/downloads/en/latest/pdf/">こちら</a>からダウンロードできます):</p>
+
+<!-- code sample 4 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    In [1]: import fitz
+    In [2]: doc = fitz.open("PyMuPDF.pdf")
+    In [3]: page = doc[0]
+    In [4]: all_infos = page.get_text("dict", sort=True)
+    In [7]: pprint(all_infos)
+    {'blocks': [{'bbox': (240.0, 88.94, 540.0, 388.94),
+         'bpc': 8,
+         'colorspace': 3,
+         'ext': 'png',
+         'height': 1200,
+         'image': b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x04\xb0'
+         << ... omitted data ... >>,
+         'number': 0,
+         'size': 107663,
+         'transform': (300.0, 0.0, -0.0, 300.0, 240.0, 88.94),
+         'type': 1,
+         'width': 1200,
+         'xres': 96,
+         'yres': 96},
+         {'bbox': (236.90, 396.92, 540.0, 432.41),
+         'lines': [{'bbox': (236.90, 396.92, 540.0, 432.41),
+                    'dir': (1.0, 0.0),
+                    'spans': [{'ascender': 1.125,
+                               'bbox': (236.90, 396.92, 540.0, 432.41),
+                               'color': 0,
+                               'descender': -0.307,
+                               'flags': 20,
+                               'font': 'TeXGyreHeros-Bold',
+                               'origin': (236.90, 424.80),
+                               'size': 24.79,
+                               'text': 'PyMuPDF Documentation'}],
+                     'wmode': 0}],
+         'number': 1,
+         'type': 0},
+        {'bbox': (422.28, 433.36, 540.0, 457.98),
+         'lines': [{'bbox': (422.28, 433.36, 540.0, 457.98),
+                    'dir': (1.0, 0.0),
+                    'spans': [{'ascender': 1.123,
+                               'bbox': (422.28, 433.36, 540.0, 457.98),
+                               'color': 0,
+                               'descender': -0.307,
+                               'flags': 22,
+                               'font': 'TeXGyreHeros-BoldItalic',
+                               'origin': (422.28, 452.7),
+                               'size': 17.215,
+                               'text': 'Release 1.20.0'}],
+                    'wmode': 0}],
+         'number': 2,
+         'type': 0},
+        {'bbox': (485.57, 515.51, 540.0, 540.17),
+         'lines': [{'bbox': (485.57, 515.51, 540.0, 540.17),
+                    'dir': (1.0, 0.0),
+                    'spans': [{'ascender': 1.125,
+                               'bbox': (485.57, 515.51, 540.0, 540.17),
+                               'color': 0,
+                               'descender': -0.307,
+                               'flags': 20,
+                               'font': 'TeXGyreHeros-Bold',
+                               'origin': (485.57, 534.88),
+                               'size': 17.22,
+                               'text': 'Artifex'}],
+                    'wmode': 0}],
+         'number': 3,
+         'type': 0},
+        {'bbox': (468.89, 652.26, 540.0, 669.38),
+         'lines': [{'bbox': (468.89, 652.26, 540.0, 669.38),
+                    'dir': (1.0, 0.0),
+                    'spans': [{'ascender': 1.125,
+                               'bbox': (468.89, 652.26, 540.0, 669.38),
+                               'color': 0,
+                               'descender': -0.307,
+                               'flags': 20,
+                               'font': 'TeXGyreHeros-Bold',
+                               'origin': (468.89,
+                                          665.71),
+                               'size': 11.96,
+                               'text': 'Jun 20, 2022'}],
+                    'wmode': 0}],
+         'number': 4,
+         'type': 0}],
+     'height': 792.0,
+     'width': 612.0}
+    In [8]:
+    </code>
+</pre>
+
+<p><code class="inline">page.get_text()</code> の上記の "dict" 出力オプションは、Pythonの多層辞書を返します。 絵は千語に値すると言いますので、この画像をご覧になることをお勧めします:</p>
+
+<img src="https://pymupdf.readthedocs.io/en/latest/_images/img-textpage.png" width=100% />
+
+<ul type="disc">
+<li>上位レベルは「block」の辞書であり、<strong>画像</strong>または<strong>テキスト段落</strong> を表します。す べての下位レベルの辞書と同様に、ブロックにはページ上の位置(「boundary box」=「bbox」)が含まれます。</li>
+<li>テキストブロック には「line」の辞書のリストが含まれています。</li>
+<li>bbox以外にも、「line」の辞書には書き方の方向(「dir」:タプル)、書き方
+のモード(「wmode」:水平または垂直)、およびテキスト「span」の辞書の
+リストが含まれます。</li>
+<li>テキストスパン は、フォント、フォントサイズ、および色のプロパティが同じ
+である文字列です。テキストに複数のフォント属性や色がある場合、行には複数
+のスパンがあります。</li>
+<li>bbox以外にも、スパンには挿入開始点(「origin」と呼ばれる)が含まれてお
+り、使用するフォントの基本的なプロパティ(フォントのアセンダー値やディセ ンダー値など)が報告されます。詳細は、<a href="https://en.wikipedia.org/wiki/Typeface">この</a>記事を参照してください。</li>
+</ul>
+
+
+<p>
+    上記の豊富な情報を利用することで、高い精度で<strong>ページの外観を再現する</strong>ことが可 能です。これは、既存のPDFの<strong>選択されたフォントを置き換える</strong> ことができる、<a href="https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/font-replacement">この</a>スクリプトの例セットによって使用されています:
+</p>
+
+<p>技術文書の中で「Courier」フォントの外観が気に入らないですか? これらのスクリプト
+を使って、「Ubuntu Mono」に置き換えてみてください!</p>
+
+<h2>特別な出力形式の抽出</h2>
+
+<p>上記で述べたように、メソッドの位置パラメータを使用して、他のテキスト出力形 式を要求することができます。次のようにして、HTMLページ(またはXHTMLや XMLなどの類似の形式)を作成し、インターネットブラウザで表示することができ ます。</p>
+
+
+<!-- code sample 5 -->
+<pre>
+    <code class="language-python" data-prismjs-copy="Copy">
+    text = page.get_text("html")
+    html_page = open("page-%i.html" % page.number, "w")
+    html_page.write(text)
+    html_page.close()
+    </code>
+</pre>
+
+<p>上記の「dict」形式の出力と同様に、HTML出力にはページ上の画像も含まれます。</p>
+
+
+<h2>テキスト抽出にPyMuPDFをモジュールとして使用する方法</h2>
+
+<p>多くの場合、スクリプトを書く手間を省くために、Pythonモジュールとしての PyMuPDFを使用して、コマンドラインで<code class="inline">python -m fitz gettext ... </code>を使ってテキスト 抽出を行うことが役立ちます。</p>
+<p>それは複数のパラメータによって影響を受けるテキストファイルを生成します。</p>
+
+<p>利用可能な出力モードは3つあります:</p>
+
+<ol>
+    <li><code class="inline">fitz gettext -mode simple</code> - <code>page.get_text()</code>の出力を生成します。</li>
+    <li><code class="inline">fitz gettext -mode blocks</code> - <code>page.get_text(sort=True)</code>の出力を生成します。</li>
+    <li><code class="inline">fitz gettext -mode layout</code> - 元のページレイアウトに似た出力を生成します。詳細
+については、PyMuPDFのドキュメンテーションの<a href="https://pymupdf.readthedocs.io/ja/latest/module.html?#text-extraction">この</a>部分をご覧ください。</li>
+</ol>
+
+<p>他のパラメータを使用することで、ページ範囲、最小フォントサイズなどを選択す ることができます。</p>
+
+
+<h2>ダイナミックOCR</h2>
+
+
+<p>PDF文書形式の主な目的は、テキストや他のデータを <strong>表示する</strong>ことです。</p>
+<p>PDFからテキストを <strong>抽出する</strong>ことは、常にうまくいくとは限りません。特定の要件 を満たす必要があります。</p>
+
+<p>最も重要な要件は、文字の視覚的な外観(その "グリフ")を元のUnicodeに戻す データの利用可能性です。この情報("文字マップ"、CMAP)は、フォントに対して まったく与えられない場合がありますし、またはフォント内の特定の文字に対して与えられない場合もあります。</p>
+
+
+<p>CMAPの欠如は<strong>テキストの抽出を防ぎます</strong> 。この障害を乗り越える唯一の方法は、 光学文字認識(OCR)を使用することです。</p>
+<p>MuPDFとPyMuPDFはともにOCRツールである<a href="https://tesseract-ocr.github.io/">Tesseract</a>をプログラムから呼び出す ことをサポートしています。このインターフェースの複数の可能な使用方法のう ち、次の状況を選択し、解決策を示します:</p>
+
+<ul type="disc">
+<li>前提として、あるページのテキストには有効なUnicodeがないグリフが含まれているとしましょう。</li>
+<li>(Py-) MuPDFのテキスト抽出は、そのようなグリフごとに文字<code class="inline">chr(0xFFFD)</code>を返します(U+FFFDは無効なUnicode値です)。</li>
+<li>エラーのあるUnicodeのテキストに遭遇するたびに、テキストの境界ボックスの一時的なイメージを作成し、Tesseractにテキストを認識させるようにします。</li>
+</ul>
+
+<p>このアプローチの利点は、OCRが実際に必要な箇所でのみ使用されることです。こ の種の問題がないページでは、実行速度の低下や抽出品質の低下は発生しません。</p>
+
+<p><a href="https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/OCR/tesseract2.py">この</a>デモスクリプトをご覧ください。これは先程の手順に完全に従っています。テ キストの一部をOCRで認識する必要がある場合、それは以下のように報告されます (各�は1つの<code class="inline">chr(0xFFFD)</code>を表します):</p>
+
+<!-- code sample 6 -->
+<pre>
+    <code class="language-shell" data-prismjs-copy="Copy">
+    before: 'binaries we generate – our decisions are ��u��t i�� i�to them. '
+    after: 'binaries we generate — our decisions are “burnt in” into them. '
+    </code>
+</pre>
+
+
+<h2>まとめ</h2>
+
+<p>PyMuPDFの多くの機能について、ほんの一部分だけでも楽しんでいただけたことを 願っています。</p>
+<p>テキスト処理についてだけでも、テキストの検索とハイライト、テキストの赤塗り を使ったテキストの操作など、さらに多くのことが語られるでしょう。</p>
+
+<p>将来の記事でこれらのトピックの一部を取り上げる予定です。</p>
+<p>PyMuPDFは大規模で機能豊富なドキュメント処理用のPythonパッケージです。卓越 したパフォーマンスと優れた描画品質に加えて、優れた <a href="https://pymupdf.readthedocs.io/ja/latest/?utm_source=artifex&utm_medium=japanese-blog&utm_content=inline-link-documentation">ドキュメント</a>が提供されて いることでも知られています。現在のPDFバージョンはレターフォーマットで420 ページ以上あり、そのうち70ページ以上がHow-To形式のレシピに充てられていま す。確かに価値のある読み物です。</p>
+
+
+<p>もう一つの知識源は<a href="https://github.com/pymupdf/PyMuPDF-Utilities">ユーティリティ</a>リポジトリです。PDFを扱う際に何かを計画し ている場合は、おそらくそこにいくつかの例示スクリプトが見つかるでしょう。そ れがスタートの手助けとなるでしょう。</p>
+<p>PyMuPDFに関する質問があれば、<a href="https://discord.gg/TSpYGBW4eq">#pymupdf</a> Discordチャンネルで開発者に連絡す ることができます。</p>
+
+
+</article>
+
+    </main>
+
+    <footer></footer>
+  </body>
+</html>
