@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Find out how elevait uses PyMuPDF to help develop their software solution.">
+  <meta property="og:title" content="elevait and PyMuPDF: Intelligent Extraction">
+  <meta property="og:image" content="https://pymupdf.co/casestudy/elevait/og_img.jpg">
+  <meta property="og:description" content="Find out how elevait uses PyMuPDF to help develop their software solution.">
+  <link rel="canonical" href="https://pymupdf.io/casestudy/elevait/">
+  <link rel="shortcut icon" src="../../favicon.ico">
+
+  <title>elevait and PyMuPDF: Intelligent Extraction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NNNN72B');</script>
+
+  <style>
+
+    body, section {
+      font-family:"Source Sans Pro", sans-serif; /* 200 = ExtraLight, 300 = Light, 400 = regular, 600 = semi-bold, 700 = bold, 900 = black */
+      font-weight:300;
+      margin: 0;
+      padding: 0;
+    }
+
+    cite {
+      font-style: initial;
+    }
+
+    main {
+      position: absolute;
+      height: auto;
+      margin: 20px;
+    }
+
+
+    #svgContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+
+    h1 {
+      font-size: 70px;
+      color: black;
+      padding: 0px;
+      -webkit-text-stroke-width: 2px;
+      -webkit-text-stroke-color: white;
+    }
+
+    h2 {
+      font-size: 36px;
+      background: #fff;
+      margin: 20px;
+      padding: 20px;
+      display: inline-block;
+      width: auto;
+      box-shadow: 10px 8px 10px 0px #00cccc;
+      border: 1px solid #00cccc;
+    }
+
+    h3 {
+      font-size: 30px;
+      background: #fff;
+      margin: 20px;
+      padding: 20px;
+      display: inline-block;
+      width: auto;
+      box-shadow: 10px 8px 10px 0px #00cccc;
+      border: 1px solid #00cccc;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+
+    p.intro {
+      font-size: 24px;
+      color: black;
+      width: 75%;
+      background: #00cccc;
+      padding: 20px;
+      border: 1px solid #333;
+      border-radius: 5px;
+    }
+
+    p.marginedTop {
+      margin-top:15px;
+    }
+
+    .textBlock {
+      font-size: 18px;
+      color: black;
+      width: 80%;
+      margin: 0 100px;
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #00cccc;
+      border-radius: 5px;
+      box-shadow: 10px 8px 10px 0px #00cccc;
+    }
+
+    div.left {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    div.right {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    cite {
+      font-weight: bold;
+    }
+
+    #svgContainer {
+      width: 100%;
+      height: 100%;
+      image-rendering: smooth;
+      opacity: 0.75;
+    }
+
+    #svgImage {
+      width: inherit;
+      height: inherit;
+      background: url("city.svg") 0 0;
+      background-size: cover;
+    }
+
+    #sideBar {
+      position: fixed;
+      right: 0;
+      width: 80px;
+      height: 100vh;
+      background: rgba(0,0,0,0.2);
+    }
+
+    #zoomValue {
+      display: inline-flex;
+      flex-flow: row wrap;
+      color: #333;
+      width: inherit;
+      height: inherit;
+    }
+
+    #zoomViz {
+      padding: 5px;
+      width: inherit;
+      height: inherit;
+      font-size: 6px;
+      color: white;
+    }
+
+
+    header {
+      display: inline-block;
+      padding: 10px;
+      position: sticky;
+      top: 10px;
+      background: rgba(0,204,204,0.95);
+      border-radius: 10px;
+      border: 1px #333 solid;
+    }
+
+
+    footer {
+      margin-top: 600px;
+    }
+
+
+    /* for anchor offsets */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header a {
+      color: #000;
+    }
+
+    :target:before {
+      content: "";
+      display: block;
+      height: 80px;
+      margin: -80px 0 0;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NNNN72B"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+  <div id="svgContainer">
+
+    <div id="svgImage"></div>
+
+  </div>
+
+
+  <div id="sideBar">
+    <div id="zoomValue">
+      <div id="zoomViz"></div>
+    </div>
+  </div>
+
+
+  <main>
+
+      <header>
+        <a href="#elevait-and-pymupdf"><cite>elevait</cite> and <cite>PyMuPDF</cite></a>
+        <br/>
+        <a href="#intelligent-extraction"><cite>Intelligent Extraction</cite></a>
+        <br/>
+        <a href="#extraction">Extraction</a> | <a href="#interpretation">Interpretation</a> | <a href="#object-management">Object Management</a>
+          | <a href="#resource-saving">Resource Saving</a>
+      </header>
+
+      <section id="elevait-and-pymupdf">
+        <h1><cite>elevait</cite> and <cite>PyMuPDF</cite></h1>
+        <p class="intro"><cite>elevait</cite> work with the intelligent digitization of data in the construction industry, as such they created a reliable solution to assist with their analysis of <cite>PDF</cite> output generated by technical <cite>CAD</cite> software. Here's how <cite>PyMuPDF</cite> helps them achieve their goals.</p>
+      </section>
+
+      <section id="intelligent-extraction">
+        <h2>&gt;&gt;&gt; Intelligent Extraction</h2>
+
+        <div class="right">
+          <div class="textBlock">
+            <ul>
+            <li><i>Imagine</i> your mapping contains all the data that a human eye can scan, interpret and conceptualize from.</li>
+
+            <li class="marginedTop"><i>Imagine</i> maps & diagrams with rich visualizations and multiple references and notes, beautifully presented.
+            </li>
+
+            <li class="marginedTop" style="color:black;">
+              <i>Imagine</i> we want to extract certain <cite>elements and groups</cite> from what we see, or turn on and off <cite>layers of information</cite>.
+
+            </li>
+            <li class="marginedTop" style="color:black;">
+            <i>Imagine</i> again that we have multiple <cite>PDF</cite> files which need to be considered together in order to understand <cite>the big picture</cite>.
+
+            </li>
+          </ul>
+            <p class="marginedTop">
+            Finally, <i>imagine</i> that this data is perhaps not so easily understood by the software running your <i>required</i> technology.
+
+            </p>
+            <p class="marginedTop">
+            We need software that is able to directly read, interpret, and assign <cite>semantic meaning</cite> to objects in such <cite>PDF</cite> documents.
+
+            </p>
+            <p class="marginedTop">
+            This is where <cite>elevait</cite> comes in with "intelligent extraction".
+            </p>
+
+
+          </div>
+
+        </div>
+      </section>
+
+      <section id="extraction">
+        <div class="right">
+          <h3>Extraction &lt;&lt;&lt;</h3>
+        </div>
+
+        <div class="right">
+          <div class="textBlock">
+              <p>It is critical to ensure that <i>all</i> important data can be extracted from an input file. By nature, <cite>PDF</cite> files present data which is first and foremost meant to be human readable. Indeed files are mostly designed by humans and therefore are intended for the human eye. However, when it comes to the computer context, because of the "designed by human" aspect we can consider data to effectively be "unstructured" from the point of view of a "computer eye".</p>
+
+              <p class="marginedTop">
+                <h4>Unstructured -> Structured data</h4>
+              Using <cite>PyMuPDF</cite>, alongside bespoke <cite>AI</cite>, we are able to source <i>structured</i> data from <i>unstructured</i> content. As well as extracting text, <cite>PyMuPDF's</cite> extraction <cite>API</cite> also extracts vector image data (see: <code><a href="https://pymupdf.readthedocs.io/en/latest/page.html#Page.get_drawings">page.get_drawings()</a></code>). Next, by analysing text & vector graphics, this content can then be interpretated. <cite>PyMuPDF</cite> is an integral part of the pipeline as it pre-processes the <cite>PDF</cite> data for subsequent <cite>elevait</cite> AI algorithms.
+            </p>
+
+          </div>
+        </div>
+      </section>
+
+      <section id="interpretation">
+        <div class="left">
+          <h3>&gt;&gt;&gt; Interpretation</h3>
+        </div>
+
+        <div class="left">
+          <div class="textBlock">
+              <p><cite>elevait</cite> employ semantic interpretation on the output data.
+              This enables transformation of unstructured data into semantic data models.</p>
+
+              <p style="color:black;">By utilizing the information within these data models we are then able to make more intelligent and informed mapping solutions for use across a wide range of scenarios and systems - for example an <cite>elevait</cite> solution can be viewed within a web-app environment.</p>
+
+              <p style="color:black;">Additionally, map "key" or "legend" data, which often requires much human-interpretation to understand, can be isolated from an input file - this allows for improved semantic models for use in your toolchain.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="object-management">
+        <div class="right">
+          <h3>Object Management &lt;&lt;&lt;</h3>
+
+        </div>
+
+        <div class="right">
+          <div class="textBlock">
+
+              <p>Project data can be enriched so that the contained geometries contain semantic meaning. This data can then be exported and used in other systems such as <cite>CAD</cite>, <cite>GIS</cite> or <cite>BIM</cite></p>
+              <p class="marginedTop">For example, through this kind of object analysis, multiple plans can be stitched together to evolve a connected plan covering a complete construction area.</p>
+
+              <p style="color:black;">As such, the solution can take multiple input's from multiple <cite>PDF</cite> file sources, interpret them and provide critical relationships between them (this is important when stiching plans together). Results can then be accurately placed on top of an Open Street Map view to get an idea of the "big picture".</p>
+
+          </div>
+        </div>
+      </section>
+
+      <section id="resource-saving">
+        <div class="left">
+          <h3>Resource Saving &lt;&lt;&lt;</h3>
+        </div>
+
+        <div class="left">
+          <div class="textBlock">
+
+              <p style="color:black;"><b>In summary</b> - if <cite>PyMuPDF</cite> understand the "trees", then <cite>elevait</cite> creates the "wood" ( or perhaps even a forest! ). Together this allows for the best of both micro & macro analysis.</p>
+
+              <p class="marginedTop">Construction costs can be more accurately made as the solution provides time savings in the realization of construction projects.</p>
+
+
+              <p class="marginedTop">This is just one example of how <cite>PyMuPDF</cite> can be utilized within your software to help create more intelligent solutions to give better results and improve efficiency.
+              </p>
+
+              <p class="marginedTop">For more on the solution with <cite>elevait</cite> see: <a href="https://www.elevait.de/en/in-plans-en">https://www.elevait.de/en/in-plans-en</a>.
+
+          </div>
+        </div>
+      </section>
+
+
+      <footer>
+        <p>
+          <a style="color: #fff;" href="../../index.php">pymupdf.io</a>
+        </p>
+
+      </footer>
+
+  </main>
+
+
+</body>
+
+
+<script>
+
+  let lastKnownScrollPosition = 0;
+  let ticking = false;
+
+  function doSomething(deltaY, lastKnownScrollPosition) {
+
+    var xxx = "";
+
+    for (var i=0;i<lastKnownScrollPosition;i++) {
+      xxx += "x ";
+    }
+
+    zoomViz.innerText = xxx;
+
+    var s = 1+(lastKnownScrollPosition/300);
+
+    var fixedNum = parseFloat(s).toFixed( 2 );
+
+    s = Number(fixedNum);
+
+    if (s<1) {
+      s=1;
+    }
+
+    svgImage.style.transform = "scale("+s+","+s+")";
+  }
+
+  var num = 20;
+  var lastScrollTop = 0;
+  document.addEventListener("scroll", (event) => {
+
+    var deltaY = 0;
+
+    var st = window.pageYOffset || document.documentElement.scrollTop;
+     if (st > lastScrollTop) {
+        // downscroll code
+        deltaY = 1;
+     } else if (st < lastScrollTop) {
+
+        deltaY = -1;
+     } // else was horizontal scroll
+
+     num += deltaY/2;
+
+     lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+
+    lastKnownScrollPosition = window.scrollY;
+
+    if (lastKnownScrollPosition <= 0) {
+      num=20;
+    }
+
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        doSomething(deltaY, lastKnownScrollPosition);
+        ticking = false;
+      });
+
+      ticking = true;
+    }
+  });
+
+  const svgImage = document.getElementById("svgImage");
+  const svgContainer = document.getElementById("svgContainer");
+  const zoomViz = document.getElementById("zoomViz");
+
+
+  var viewBox = {x:0,y:0,w:svgImage.clientWidth,h:svgImage.clientHeight};
+  const svgSize = {w:svgImage.clientWidth,h:svgImage.clientHeight};
+
+
+
+</script>
+
+</html>
