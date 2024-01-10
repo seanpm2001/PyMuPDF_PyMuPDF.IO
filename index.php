@@ -52,12 +52,17 @@
         <img class="logo blink-me" src="images/logo.svg"/>
         <h1>Welcome to<br/>PyMuPDF</h1>
         <h2>Downloaded more than <strong>30 million times</strong> and consistently developed for more than eight years, <strong>PyMuPDF</strong> is the clear choice for <strong>Python</strong> developers looking to tap into powerful <strong>API</strong> functionality for <strong>PDF</strong>.</h2>
-        </div>
+      </div>
     </header>
 
     <main>
+
+
       <article>
 
+        <h3><span class="python-prompt"></span> Casestudy</h3>
+
+        <a class="animate-link" href="casestudy/elevait/index.html">Read our latest Casestudy</a>
 
         <h3><span class="python-prompt"></span> Available via <cite>PyPi</cite></h3>
 
