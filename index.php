@@ -25,6 +25,8 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-NNNN72B');</script>
 
+    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="4a6d0620-56aa-4d11-9ab4-556df1c909bc" data-blockingmode="auto" type="text/javascript"></script>
+
 
     <script defer data-domain="pyodide.org" src="https://plausible.io/js/plausible.js"></script>
 
@@ -194,6 +196,7 @@
 
 
       <a href="https://artifex.com?utm_source=pymupdf.io&utm_medium=website&utm_content=footer-logo"><img class="logo" src="images/artifex-logo.svg" /></a>
+      <a href="cookies.php">Cookie Consent</a>
     </footer>
 
   </body>
@@ -456,6 +459,8 @@
       }
 
     </script>
+
+
 
 
 </html>
