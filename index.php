@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/ticker.css">
     <link rel="shortcut icon" src="favicon.ico">
+    <script src="js/iframeResizer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/jquery.terminal.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/unix_formatting.min.js"></script>
@@ -37,6 +38,20 @@
 
     ?>
 
+    <style>
+      iframe {
+        width: 1px;
+
+      }
+
+      #pymupdf-terminal {
+        background: #000;
+        min-width: 100%;
+        height: 600px;
+        z-index: 2000;
+      }
+    </style>
+
 
   </head>
 
@@ -49,12 +64,10 @@
     <!-- End Google Tag Manager (noscript) -->
 
 
-    <header>
-      <div class="panel">
-        <img class="logo blink-me" src="images/logo.svg"/>
-        <h1>Welcome to<br/>PyMuPDF</h1>
-        <h2>Downloaded more than <strong>30 million times</strong> and consistently developed for more than eight years, <strong>PyMuPDF</strong> is the clear choice for <strong>Python</strong> developers looking to tap into powerful <strong>API</strong> functionality for <strong>PDF</strong>.</h2>
-      </div>
+    <header style="background: #007aff;position:sticky;top:0;">
+
+      <h2 style="margin:0 auto 10px;padding-top:10px;padding-bottom:10px;"><strong>PyMuPDF</strong> is the clear choice for <strong>Python</strong> developers looking to tap into powerful <strong>API</strong> functionality for <strong>PDF</strong>.</h2>
+
     </header>
 
     <main>
@@ -80,14 +93,24 @@
               <div class="prompt">DOWNLOADS ON PYPI <span style="font-size:18px;color:red;">*</span></div>
               <div id="ticker"></div>
           </div>
-          <div class="ghost"></div>
+
 
       </div>
 
 
-      <div style="margin-top:50px;"><span style="font-size:18px;color:red;">*</span><small> This visualization shows the 30 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 2.8 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
+      <div style="margin-top:30px;"><span style="font-size:18px;color:red;">*</span><small> This shows the 30 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 2.8 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
 
-      <hr>
+      <p/>
+
+      <h3><span class="python-prompt" id="pymupdf-terminal-title"></span> PyMuPDF Terminal</h3>
+
+      <article id="pymupdf-terminal">
+        <div class="loading"></div>
+      </article>
+
+      <script>
+        iFrameResize({ log: true }, '#drpdf')
+      </script>
 
       <article>
 
@@ -111,7 +134,11 @@
 
       <hr>
 
-    <div id="terminal"><div class="loading"></div></div>
+    <iframe id="terminal" src="https://www.askdrpdf.com/"></iframe>
+
+    <script>
+      iFrameResize({ log: true }, '#terminal')
+    </script>
 
 <!-- note the indentation on the code blocks within <pre> is deliberate & important for correct layout ! -->
       <div class="console-examples">
@@ -190,14 +217,20 @@
 
       <hr>
 
+
+
     </main>
 
-    <footer>
+    <footer style="display: flex; align-items: center;justify-content: flex-start;padding:0;width:60%">
 
 
-      <a href="https://artifex.com?utm_source=pymupdf.io&utm_medium=website&utm_content=footer-logo"><img class="logo" src="images/artifex-logo.svg" /></a>
-      <a href="cookies.php">Cookie Consent</a>
-    </footer>
+          <div><a href="https://artifex.com?utm_source=pymupdf.io&utm_medium=website&utm_content=footer-logo"><img class="logo" style="width:200px;height:auto;" src="images/artifex-logo.svg" /></a></div>
+          <div>
+            <a href="cookies.php">Cookie Consent</a>
+          </div>
+      </footer>
+
+
 
   </body>
 
@@ -354,7 +387,7 @@
           unlock();
         }
 
-        term = $("#terminal").terminal(interpreter, {
+        term = $("#pymupdf-terminal").terminal(interpreter, {
           greetings: banner,
           prompt: ps1,
           completionEscape: false,
@@ -427,6 +460,9 @@
         });
 
         processCommands(commands);
+        $('html, body').animate({
+                    scrollTop: $("#pymupdf-terminal-title").offset().top
+                }, 400);
       }
 
 
