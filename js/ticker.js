@@ -1,11 +1,11 @@
-let rate = 0.1424; // the average rate since August 2016
+let rate = 0.2499; // the average rate since August 2016
 let intialDate = new Date("2016-08-01");
 
 var initialNumber;
 
-// Now we have downloads at about one every 2.8 seconds
+// Now we have downloads at about one every 1.4 seconds
 function startTimer() {
-  var myInterval = setInterval(tick, 2800);
+  var myInterval = setInterval(tick, 1400);
 }
 
 
