@@ -98,7 +98,7 @@
       </div>
 
 
-      <div style="margin-top:30px;"><span style="font-size:18px;color:red;">*</span><small> This shows the 30 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 2.8 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
+      <div style="margin-top:30px;"><span style="font-size:18px;color:red;">*</span><small> This shows the 30 million benchmark from <strong>PyPi</strong> and the average download rate @ around one per 1.4 seconds! Yes, we know this isn't 100% accurate, enjoy responsibly 🙂</small></div>
 
       <p/>
 
