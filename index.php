@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/ticker.css">
     <link rel="shortcut icon" src="favicon.ico">
-    <script src="js/iframeResizer.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/jquery.terminal.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal@2.35.2/js/unix_formatting.min.js"></script>
@@ -39,10 +39,7 @@
     ?>
 
     <style>
-      iframe {
-        width: 1px;
 
-      }
 
       #pymupdf-terminal {
         background: #000;
@@ -102,15 +99,54 @@
 
       <p/>
 
+
+      <hr />
+      <h2>File Loader</h2>
+      <menu>
+        <button id="fileOpenButton" style="display: none;" onclick="document.getElementById('open-file-input').click()">Open File</button>
+
+      </menu>
+      <!-- hidden input for file dialog -->
+      <input
+        style="display: none"
+        id="open-file-input"
+        type="file"
+        accept=".pdf,application/pdf"
+        onchange="open_document_from_file(event.target.files[0])"
+      >
+      <hr/>
+
+      <script>
+
+        var userFile;
+        var userDocData;
+        var userFileByteLength;
+
+        async function open_document_from_file(file) {
+
+          userFile = file;
+
+          try {
+
+
+            userDocData = await file.arrayBuffer();
+
+            userFileByteLength = userDocData.byteLength;
+            loadUserDocument();
+
+          } catch (error) {
+            //show_message(error.name + ": " + error.message)
+            console.error(error)
+          }
+        }
+      </script>
       <h3><span class="python-prompt" id="pymupdf-terminal-title"></span> PyMuPDF Terminal</h3>
 
       <article id="pymupdf-terminal">
         <div class="loading"></div>
       </article>
 
-      <script>
-        iFrameResize({ log: true }, '#drpdf')
-      </script>
+
 
       <article>
 
@@ -135,10 +171,6 @@
       <hr>
 
     <iframe id="terminal" src="https://www.askdrpdf.com/"></iframe>
-
-    <script>
-      iFrameResize({ log: true }, '#terminal')
-    </script>
 
 <!-- note the indentation on the code blocks within <pre> is deliberate & important for correct layout ! -->
       <div class="console-examples">
@@ -287,7 +319,7 @@
             from pyodide.ffi import to_js
             from pyodide.console import PyodideConsole, repr_shorten, BANNER
             import __main__
-            BANNER = "Welcome to the PyMuPDF web console.\\nType \\"pymupdf.version\\" to check we are ready!"
+            BANNER = "Welcome to the PyMuPDF web console.\\nOpen a file from the File Loader button to get started."
             pyconsole = PyodideConsole(__main__.__dict__)
             import builtins
             async def await_fut(fut):
@@ -301,7 +333,7 @@
           { globals: namespace },
         );
 
-        await pyodide.loadPackage('PyMuPDF-1.23.5-cp311-none-emscripten_3_1_32_wasm32.whl');
+        await pyodide.loadPackage('PyMuPDF-1.24.4-cp311-none-emscripten_3_1_32_wasm32.whl');
 
         await pyodide.runPython(`
           import pymupdf
@@ -446,9 +478,32 @@
 
         $(".loading").hide();
 
+        document.getElementById("fileOpenButton").style.display = "block";
+
       }
 
       window.console_ready = main();
+
+      function loadUserDocument() {
+        var commands = [];
+
+        commands.push("from js import userFile, userDocData")
+
+        commands.push("dataPy = userDocData.to_py()");
+        commands.push("data = bytes(dataPy)");
+
+        commands.push("doc = pymupdf.Document(stream=data)");
+
+
+        commands.push("page = doc[0]");
+        commands.push("text = page.get_text()");
+        commands.push("print(text)");
+        commands.push("for page in doc:");
+        commands.push("    print(f'Page: {page.number}')");
+
+        processCommands(commands);
+
+      }
 
       /**
        *
