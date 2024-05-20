@@ -150,7 +150,7 @@
         <h2>Print the version of PyMuPDF</h2>
         <div id="pythonScript" class="a">
         <pre>
-<code>fitz.version</code>
+<code>pymupdf.version</code>
         </pre>
           <button onClick="parseScript('a')">RUN ></button>
         </div>
@@ -161,7 +161,7 @@
 <code>import pyodide.http</code>
 <code>r = await pyodide.http.pyfetch('https://pymupdf.io/docs/mupdf_explored.pdf')</code>
 <code>data = await r.bytes()</code>
-<code>doc = fitz.Document(stream=data)</code>
+<code>doc = pymupdf.Document(stream=data)</code>
 <code>print(f'Is PDF: {doc.is_pdf}')</code>
 <code>print(f'Number of pages: {doc.page_count}')</code>
         </pre>
@@ -176,7 +176,7 @@
 <code>import pyodide.http</code>
 <code>r = await pyodide.http.pyfetch('https://pymupdf.io/docs/mupdf_explored.pdf')</code>
 <code>data = await r.bytes()</code>
-<code>doc = fitz.Document(stream=data)</code>
+<code>doc = pymupdf.Document(stream=data)</code>
 <code>for page in doc:</code>
 <code>    print(f'Page: {page.number}')</code>
         </pre>
@@ -191,7 +191,7 @@
 <code>import pyodide.http</code>
 <code>r = await pyodide.http.pyfetch('https://pymupdf.io/docs/mupdf_explored.pdf')</code>
 <code>data = await r.bytes()</code>
-<code>doc = fitz.Document(stream=data)</code>
+<code>doc = pymupdf.Document(stream=data)</code>
 <code>for page in doc:</code>
 <code>    for annot in page.annots():</code>
 <code>        print(f'Annotation on page: {page.number} with type: {annot.type} and rect: {annot.rect}')</code>
@@ -287,7 +287,7 @@
             from pyodide.ffi import to_js
             from pyodide.console import PyodideConsole, repr_shorten, BANNER
             import __main__
-            BANNER = "Welcome to the PyMuPDF web console.\\nType \\"fitz.version\\" to check we are ready!"
+            BANNER = "Welcome to the PyMuPDF web console.\\nType \\"pymupdf.version\\" to check we are ready!"
             pyconsole = PyodideConsole(__main__.__dict__)
             import builtins
             async def await_fut(fut):
@@ -304,8 +304,8 @@
         await pyodide.loadPackage('PyMuPDF-1.23.5-cp311-none-emscripten_3_1_32_wasm32.whl');
 
         await pyodide.runPython(`
-          import fitz
-          print("fitz imported:"+str(fitz.version))
+          import pymupdf
+          print("pymupdf imported:"+str(pymupdf.version))
         `);
 
         let repr_shorten = namespace.get("repr_shorten");
